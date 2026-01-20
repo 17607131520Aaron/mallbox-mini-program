@@ -1,16 +1,17 @@
 import { View, Text, ScrollView } from "@tarojs/components";
+import Taro from "@tarojs/taro";
 
 import { useState, useEffect } from "react";
 
-import { mockMainCategories, mockSubCategories } from "@/mock/data";
+import homeServices from "@/services/homeService";
 
-import type { MainCategory, SubCategory } from "../../types";
+import type { IMainCategory, IProductItem } from "./type";
 
 import "./index.scss";
 
 const Category = (): JSX.Element => {
-  const [mainCategories, setMainCategories] = useState<MainCategory[]>([]);
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [mainCategories, setMainCategories] = useState<IMainCategory[]>([]);
+  const [products, setProducts] = useState<IProductItem[]>([]);
   const [selectedMainId, setSelectedMainId] = useState<string>("");
 
   useEffect(() => {
@@ -18,18 +19,31 @@ const Category = (): JSX.Element => {
   }, []);
 
   const loadCategoryData = (): void => {
-    setMainCategories(mockMainCategories);
-    setSubCategories(mockSubCategories);
-    if (mockMainCategories.length > 0) {
-      setSelectedMainId(mockMainCategories[0].id);
+    //获取分类列表
+    const categories = homeServices.getCategories();
+    setMainCategories(categories);
+    if (categories.length > 0) {
+      setSelectedMainId(categories[0].id);
+      // 获取第一个分类下的商品
+      const productList = homeServices.getProductsByCategory(categories[0].id);
+      setProducts(productList);
     }
   };
 
   const handleMainCategoryClick = (id: string): void => {
     setSelectedMainId(id);
+    // 切换分类时加载对应的商品
+    const productList = homeServices.getProductsByCategory(id);
+    setProducts(productList);
   };
 
-  const filteredSubCategories = subCategories.filter((sub) => sub.parentId === selectedMainId);
+  //点击商品进入详情()
+  const handleProductClick = (id: string): void => {
+    Taro.showToast({
+      title: `商品详情开发中${id}`,
+      icon: "none",
+    });
+  };
 
   return (
     <View className="category-page">
@@ -51,9 +65,9 @@ const Category = (): JSX.Element => {
       <View className="sub-category-list">
         <ScrollView scrollY className="main-scroll">
           <View className="sub-grid">
-            {filteredSubCategories.map((item) => {
+            {products.map((item) => {
               return (
-                <View key={item.id} className="sub-item">
+                <View key={item.id} className="sub-item" onClick={() => handleProductClick(item.id)}>
                   <View className="sub-image">
                     <Text className="placeholder">图</Text>
                   </View>

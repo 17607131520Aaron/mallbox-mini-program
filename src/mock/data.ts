@@ -1,13 +1,4 @@
-import type {
-  BannerItem,
-  CategoryItem,
-  ProductItem,
-  CartItem,
-  UserInfo,
-  OrderStats,
-  MainCategory,
-  SubCategory,
-} from "../types";
+import type { BannerItem, CategoryItem, ProductItem, CartItem, UserInfo, OrderStats, SubCategory } from "../types";
 
 // 轮播图模拟数据
 export const mockBanners: BannerItem[] = [
@@ -116,26 +107,6 @@ export const mockOrderStats: OrderStats = {
   unreceived: 3,
   uncommented: 5,
 };
-
-const getRandomChineseName = (): string => {
-  const chars = "一二三四五六七八九十百千万衣食住行玩数码家电美妆箱包鞋服配饰";
-  const len = Math.floor(Math.random() * 2) + 2; // 2-3个字
-  let name = "";
-  for (let i = 0; i < len; i++) {
-    name += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return name;
-};
-
-const generateRandomCategories = (count: number) => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: (i + 1).toString(), // ID为1-100
-    name: getRandomChineseName(),
-  }));
-};
-
-// 一级分类模拟数据
-export const mockMainCategories: MainCategory[] = generateRandomCategories(100);
 
 // 二级分类模拟数据
 export const mockSubCategories: SubCategory[] = [

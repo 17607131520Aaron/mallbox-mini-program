@@ -1,7 +1,11 @@
 import { View, Text, ScrollView } from "@tarojs/components";
+
 import { useState, useEffect } from "react";
-import { mockCartItems } from "../../mock/data";
-import type { CartItem } from "../../types";
+
+import type { CartItem } from "@/types";
+
+import { mockCartItems } from "@/mock/data";
+
 import "./index.scss";
 
 const Cart = (): JSX.Element => {
@@ -16,18 +20,12 @@ const Cart = (): JSX.Element => {
   };
 
   const toggleItem = (id: string): void => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
-      )
-    );
+    setCartItems(cartItems.map((item) => (item.id === id ? { ...item, selected: !item.selected } : item)));
   };
 
   const toggleAll = (): void => {
     const allSelected = cartItems.every((item) => item.selected);
-    setCartItems(
-      cartItems.map((item) => ({ ...item, selected: !allSelected }))
-    );
+    setCartItems(cartItems.map((item) => ({ ...item, selected: !allSelected })));
   };
 
   const updateQuantity = (id: string, delta: number): void => {
@@ -38,17 +36,13 @@ const Cart = (): JSX.Element => {
           return { ...item, quantity: newQuantity };
         }
         return item;
-      })
+      }),
     );
   };
 
   const selectedItems = cartItems.filter((item) => item.selected);
-  const totalPrice = selectedItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const allSelected =
-    cartItems.length > 0 && cartItems.every((item) => item.selected);
+  const totalPrice = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const allSelected = cartItems.length > 0 && cartItems.every((item) => item.selected);
 
   if (cartItems.length === 0) {
     return (
@@ -67,10 +61,7 @@ const Cart = (): JSX.Element => {
         <View className="cart-list">
           {cartItems.map((item) => (
             <View key={item.id} className="cart-item">
-              <View
-                className={`checkbox ${item.selected ? "checked" : ""}`}
-                onClick={() => toggleItem(item.id)}
-              >
+              <View className={`checkbox ${item.selected ? "checked" : ""}`} onClick={() => toggleItem(item.id)}>
                 {item.selected && <Text>✓</Text>}
               </View>
               <View className="item-image">
@@ -88,10 +79,7 @@ const Cart = (): JSX.Element => {
                       <Text>-</Text>
                     </View>
                     <Text className="quantity">{item.quantity}</Text>
-                    <View
-                      className="btn"
-                      onClick={() => updateQuantity(item.id, 1)}
-                    >
+                    <View className="btn" onClick={() => updateQuantity(item.id, 1)}>
                       <Text>+</Text>
                     </View>
                   </View>
@@ -103,10 +91,7 @@ const Cart = (): JSX.Element => {
       </ScrollView>
       <View className="cart-footer">
         <View className="footer-left">
-          <View
-            className={`checkbox-all ${allSelected ? "checked" : ""}`}
-            onClick={toggleAll}
-          >
+          <View className={`checkbox-all ${allSelected ? "checked" : ""}`} onClick={toggleAll}>
             {allSelected && <Text>✓</Text>}
           </View>
           <View className="total-info">
@@ -114,9 +99,7 @@ const Cart = (): JSX.Element => {
             <Text className="total-price">¥{totalPrice.toFixed(2)}</Text>
           </View>
         </View>
-        <View
-          className={`checkout-btn ${selectedItems.length === 0 ? "disabled" : ""}`}
-        >
+        <View className={`checkout-btn ${selectedItems.length === 0 ? "disabled" : ""}`}>
           <Text>结算({selectedItems.length})</Text>
         </View>
       </View>
@@ -125,4 +108,3 @@ const Cart = (): JSX.Element => {
 };
 
 export default Cart;
-

@@ -24,16 +24,16 @@ const Category = (): JSX.Element => {
     setMainCategories(categories);
     if (categories.length > 0) {
       setSelectedMainId(categories[0].id);
-      // 获取第一个分类下的商品
-      const productList = homeServices.getProductsByCategory(categories[0].id);
+      // 获取第一个分类下的商品（生成100个）
+      const productList = homeServices.getProductsByCategory(categories[0].id, 100);
       setProducts(productList);
     }
   };
 
   const handleMainCategoryClick = (id: string): void => {
     setSelectedMainId(id);
-    // 切换分类时加载对应的商品
-    const productList = homeServices.getProductsByCategory(id);
+    // 切换分类时加载对应的商品（生成100个）
+    const productList = homeServices.getProductsByCategory(id, 100);
     setProducts(productList);
   };
 

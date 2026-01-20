@@ -1,7 +1,11 @@
 import { View, Text, ScrollView } from "@tarojs/components";
+
 import { useState, useEffect } from "react";
-import { mockMainCategories, mockSubCategories } from "../../mock/data";
+
+import { mockMainCategories, mockSubCategories } from "@/mock/data";
+
 import type { MainCategory, SubCategory } from "../../types";
+
 import "./index.scss";
 
 const Category = (): JSX.Element => {
@@ -25,36 +29,38 @@ const Category = (): JSX.Element => {
     setSelectedMainId(id);
   };
 
-  const filteredSubCategories = subCategories.filter(
-    (sub) => sub.parentId === selectedMainId
-  );
+  const filteredSubCategories = subCategories.filter((sub) => sub.parentId === selectedMainId);
 
   return (
     <View className="category-page">
       <View className="main-category-list">
         <ScrollView scrollY className="main-scroll">
-          {mainCategories.map((item) => (
-            <View
-              key={item.id}
-              className={`main-item ${selectedMainId === item.id ? "active" : ""}`}
-              onClick={() => handleMainCategoryClick(item.id)}
-            >
-              <Text>{item.name}</Text>
-            </View>
-          ))}
+          {mainCategories.map((item) => {
+            return (
+              <View
+                key={item.id}
+                className={`main-item ${selectedMainId === item.id ? "active" : ""}`}
+                onClick={() => handleMainCategoryClick(item.id)}
+              >
+                <Text className="main-item-title">{item.name}</Text>
+              </View>
+            );
+          })}
         </ScrollView>
       </View>
       <View className="sub-category-list">
-        <ScrollView scrollY className="sub-scroll">
+        <ScrollView scrollY className="main-scroll">
           <View className="sub-grid">
-            {filteredSubCategories.map((item) => (
-              <View key={item.id} className="sub-item">
-                <View className="sub-image">
-                  <Text className="placeholder">图</Text>
+            {filteredSubCategories.map((item) => {
+              return (
+                <View key={item.id} className="sub-item">
+                  <View className="sub-image">
+                    <Text className="placeholder">图</Text>
+                  </View>
+                  <Text className="sub-name">{item.name}</Text>
                 </View>
-                <Text className="sub-name">{item.name}</Text>
-              </View>
-            ))}
+              );
+            })}
           </View>
         </ScrollView>
       </View>
@@ -63,4 +69,3 @@ const Category = (): JSX.Element => {
 };
 
 export default Category;
-

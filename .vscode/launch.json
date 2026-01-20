@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Taro WeApp Debug",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:weapp"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Taro H5 Debug",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:h5"],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Chrome Debug H5",
+      "url": "http://localhost:10086",
+      "webRoot": "${workspaceFolder}/dist/h5",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*"
+      }
+    }
+  ]
+}

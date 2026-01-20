@@ -1,0 +1,76 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "dev:weapp",
+      "label": "开发: 微信小程序",
+      "detail": "启动微信小程序开发模式",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev:h5",
+      "label": "开发: H5",
+      "detail": "启动H5开发模式",
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "build:weapp",
+      "label": "构建: 微信小程序",
+      "detail": "构建微信小程序生产版本",
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "build:h5",
+      "label": "构建: H5",
+      "detail": "构建H5生产版本",
+      "problemMatcher": [],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "ESLint: 修复所有问题",
+      "command": "npx eslint . --ext .js,.jsx,.ts,.tsx --fix",
+      "problemMatcher": ["$eslint-stylish"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "Prettier: 格式化所有文件",
+      "command": "npx prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}

@@ -7,33 +7,32 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:prettier/recommended",
-    "prettier"
+    "prettier",
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2022,
     "sourceType": "module",
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
     },
-    "project": "./tsconfig.json"
+    "project": "./tsconfig.json",
   },
   "env": {
     "browser": true,
     "es2021": true,
-    "node": true
+    "node": true,
   },
-  "plugins": [
-    "@typescript-eslint",
-    "react",
-    "react-hooks",
-    "import",
-    "unused-imports"
-  ],
-  "ignorePatterns": [
-    "dist",
-    "node_modules"
-  ],
+  "plugins": ["@typescript-eslint", "react", "react-hooks", "import", "unused-imports"],
+  "ignorePatterns": ["dist", "node_modules"],
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json",
+      },
+    },
+  },
   "rules": {
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
@@ -43,13 +42,10 @@
       "error",
       {
         "props": "never",
-        "children": "never"
-      }
+        "children": "never",
+      },
     ],
-    "react/jsx-boolean-value": [
-      "error",
-      "never"
-    ],
+    "react/jsx-boolean-value": ["error", "never"],
     "react/self-closing-comp": "error",
     "react/jsx-sort-props": [
       "error",
@@ -57,8 +53,8 @@
         "callbacksLast": true,
         "shorthandFirst": true,
         "ignoreCase": true,
-        "reservedFirst": true
-      }
+        "reservedFirst": true,
+      },
     ],
 
     "react-hooks/rules-of-hooks": "error",
@@ -74,8 +70,8 @@
         "varsIgnorePattern": "^React$|^_",
         "args": "after-used",
         "argsIgnorePattern": "^_",
-        "ignoreRestSiblings": true
-      }
+        "ignoreRestSiblings": true,
+      },
     ],
 
     "@typescript-eslint/no-explicit-any": "error",
@@ -84,27 +80,24 @@
       "error",
       {
         "allowExpressions": true,
-        "allowTypedFunctionExpressions": true
-      }
+        "allowTypedFunctionExpressions": true,
+      },
     ],
-    "@typescript-eslint/consistent-type-definitions": [
-      "error",
-      "interface"
-    ],
+    "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
     "@typescript-eslint/consistent-type-imports": [
       "error",
       {
         "prefer": "type-imports",
         "disallowTypeAnnotations": false,
-        "fixStyle": "separate-type-imports"
-      }
+        "fixStyle": "separate-type-imports",
+      },
     ],
     "@typescript-eslint/consistent-type-assertions": [
       "error",
       {
         "assertionStyle": "as",
-        "objectLiteralTypeAssertions": "never"
-      }
+        "objectLiteralTypeAssertions": "never",
+      },
     ],
     "@typescript-eslint/no-non-null-assertion": "warn",
     "@typescript-eslint/no-empty-function": "warn",
@@ -112,36 +105,26 @@
       "error",
       {
         "ts-ignore": "allow-with-description",
-        "minimumDescriptionLength": 10
-      }
+        "minimumDescriptionLength": 10,
+      },
     ],
 
     "@typescript-eslint/naming-convention": [
       "error",
       {
         "selector": "interface",
-        "format": [
-          "PascalCase"
-        ],
-        "prefix": [
-          "I"
-        ]
+        "format": ["PascalCase"],
+        "prefix": ["I"],
       },
       {
         "selector": "typeAlias",
-        "format": [
-          "PascalCase"
-        ]
+        "format": ["PascalCase"],
       },
       {
         "selector": "enum",
-        "format": [
-          "PascalCase"
-        ],
-        "prefix": [
-          "E"
-        ]
-      }
+        "format": ["PascalCase"],
+        "prefix": ["E"],
+      },
     ],
     "@typescript-eslint/member-ordering": [
       "error",
@@ -161,45 +144,31 @@
             "private-static-method",
             "public-instance-method",
             "protected-instance-method",
-            "private-instance-method"
-          ]
-        }
-      }
+            "private-instance-method",
+          ],
+        },
+      },
     ],
 
     "no-console": [
       "warn",
       {
-        "allow": [
-          "warn",
-          "error",
-          "info",
-          "log"
-        ]
-      }
+        "allow": ["warn", "error", "info", "log"],
+      },
     ],
     "no-debugger": "warn",
     "prefer-const": "error",
     "no-var": "error",
     "no-duplicate-imports": "off",
-    "curly": [
-      "error",
-      "all"
-    ],
-    "eqeqeq": [
-      "error",
-      "always"
-    ],
+    "curly": ["error", "all"],
+    "eqeqeq": ["error", "always"],
     "no-multiple-empty-lines": [
       "error",
       {
-        "max": 1
-      }
+        "max": 1,
+      },
     ],
-    "object-shorthand": [
-      "error",
-      "always"
-    ],
+    "object-shorthand": ["error", "always"],
     "prefer-template": "error",
 
     "import/no-unresolved": "error",
@@ -209,35 +178,26 @@
     "import/order": [
       "error",
       {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-          "object",
-          "type"
-        ],
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
         "newlines-between": "always",
         "alphabetize": {
           "order": "asc",
-          "caseInsensitive": true
-        }
-      }
+          "caseInsensitive": true,
+        },
+      },
     ],
     "import/no-duplicates": [
       "error",
       {
-        "prefer-inline": false
-      }
+        "prefer-inline": false,
+      },
     ],
 
     "max-params": [
       "error",
       {
-        "max": 4
-      }
+        "max": 4,
+      },
     ],
     "max-len": [
       "error",
@@ -245,8 +205,8 @@
         "code": 120,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true,
-        "ignoreComments": true
-      }
-    ]
-  }
+        "ignoreComments": true,
+      },
+    ],
+  },
 }

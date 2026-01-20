@@ -1,7 +1,10 @@
 import { View, Text, ScrollView } from "@tarojs/components";
-import { useState, useEffect } from "react";
 import Taro from "@tarojs/taro";
+
+import { useState, useEffect } from "react";
+
 import { mockUserInfo, mockOrderStats } from "../../mock/data";
+
 import type { UserInfo, OrderStats } from "../../types";
 import "./index.scss";
 
@@ -114,11 +117,7 @@ const Profile = (): JSX.Element => {
 
         <View className="function-section">
           {functionList.map((item, index) => (
-            <View
-              key={index}
-              className="function-item"
-              onClick={() => handleFunctionClick(item.text)}
-            >
+            <View key={index} className="function-item" onClick={() => handleFunctionClick(item.text)}>
               <View className="item-left">
                 <View className="item-icon">
                   <Text>{item.icon}</Text>

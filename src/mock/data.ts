@@ -117,17 +117,25 @@ export const mockOrderStats: OrderStats = {
   uncommented: 5,
 };
 
+const getRandomChineseName = (): string => {
+  const chars = "一二三四五六七八九十百千万衣食住行玩数码家电美妆箱包鞋服配饰";
+  const len = Math.floor(Math.random() * 2) + 2; // 2-3个字
+  let name = "";
+  for (let i = 0; i < len; i++) {
+    name += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return name;
+};
+
+const generateRandomCategories = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: (i + 1).toString(), // ID为1-100
+    name: getRandomChineseName(),
+  }));
+};
+
 // 一级分类模拟数据
-export const mockMainCategories: MainCategory[] = [
-  { id: "1", name: "女装" },
-  { id: "2", name: "男装" },
-  { id: "3", name: "鞋靴" },
-  { id: "4", name: "箱包" },
-  { id: "5", name: "配饰" },
-  { id: "6", name: "美妆" },
-  { id: "7", name: "家居" },
-  { id: "8", name: "数码" },
-];
+export const mockMainCategories: MainCategory[] = generateRandomCategories(100);
 
 // 二级分类模拟数据
 export const mockSubCategories: SubCategory[] = [
@@ -148,4 +156,3 @@ export const mockSubCategories: SubCategory[] = [
   { id: "3-3", name: "皮鞋", imageUrl: "", parentId: "3" },
   { id: "3-4", name: "靴子", imageUrl: "", parentId: "3" },
 ];
-

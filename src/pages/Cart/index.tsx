@@ -2,9 +2,9 @@ import { View, Text, ScrollView } from "@tarojs/components";
 
 import { useState, useEffect } from "react";
 
-import type { CartItem } from "@/types";
-
 import { mockCartItems } from "@/mock/data";
+
+import type { CartItem } from "@/types";
 
 import "./index.scss";
 

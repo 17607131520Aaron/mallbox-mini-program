@@ -1,1 +1,0 @@
-# mallbox-mini-program

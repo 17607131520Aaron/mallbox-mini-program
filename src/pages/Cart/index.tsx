@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 
 import { useState, useEffect } from "react";
 
@@ -47,36 +47,34 @@ const Cart = (): JSX.Element => {
   return (
     <View className="cart-page">
       <View className="cart-list">
-        <ScrollView scrollY className="main-scroll">
-          {cartItems.map((item) => (
-            <View key={item.id} className="cart-item">
-              <View className={`checkbox ${item.selected ? "checked" : ""}`} onClick={() => toggleItem(item.id)}>
-                {item.selected && <Text>✓</Text>}
-              </View>
-              <View className="item-image">
-                <Text>图片</Text>
-              </View>
-              <View className="item-info">
-                <Text className="item-name">{item.name}</Text>
-                <View className="item-bottom">
-                  <Text className="item-price">¥{item.price}</Text>
-                  <View className="quantity-control">
-                    <View
-                      className={`btn ${item.quantity <= 1 ? "disabled" : ""}`}
-                      onClick={() => updateQuantity(item.id, -1)}
-                    >
-                      <Text>-</Text>
-                    </View>
-                    <Text className="quantity">{item.quantity}</Text>
-                    <View className="btn" onClick={() => updateQuantity(item.id, 1)}>
-                      <Text>+</Text>
-                    </View>
+        {cartItems.map((item) => (
+          <View key={item.id} className="cart-item">
+            <View className={`checkbox ${item.selected ? "checked" : ""}`} onClick={() => toggleItem(item.id)}>
+              {item.selected && <Text>✓</Text>}
+            </View>
+            <View className="item-image">
+              <Text>图片</Text>
+            </View>
+            <View className="item-info">
+              <Text className="item-name">{item.name}</Text>
+              <View className="item-bottom">
+                <Text className="item-price">¥{item.price}</Text>
+                <View className="quantity-control">
+                  <View
+                    className={`btn ${item.quantity <= 1 ? "disabled" : ""}`}
+                    onClick={() => updateQuantity(item.id, -1)}
+                  >
+                    <Text>-</Text>
+                  </View>
+                  <Text className="quantity">{item.quantity}</Text>
+                  <View className="btn" onClick={() => updateQuantity(item.id, 1)}>
+                    <Text>+</Text>
                   </View>
                 </View>
               </View>
             </View>
-          ))}
-        </ScrollView>
+          </View>
+        ))}
       </View>
 
       <View className="cart-footer">

@@ -2,21 +2,21 @@ import { View, Text, ScrollView } from "@tarojs/components";
 
 import { useState, useEffect } from "react";
 
-import { mockCartItems } from "@/mock/data";
+import homeService from "@/services/homeService/services";
 
-import type { CartItem } from "@/types";
-
+import type { ICartItem } from "./type";
 import "./index.scss";
 
 const Cart = (): JSX.Element => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<ICartItem[]>([]);
 
   useEffect(() => {
     loadCartData();
   }, []);
 
   const loadCartData = (): void => {
-    setCartItems(mockCartItems);
+    const items = homeService.getCartItems();
+    setCartItems(items);
   };
 
   const toggleItem = (id: string): void => {
@@ -44,21 +44,10 @@ const Cart = (): JSX.Element => {
   const totalPrice = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const allSelected = cartItems.length > 0 && cartItems.every((item) => item.selected);
 
-  if (cartItems.length === 0) {
-    return (
-      <View className="cart-page">
-        <View className="empty-cart">
-          <Text className="empty-icon">🛒</Text>
-          <Text className="empty-text">购物车是空的</Text>
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View className="cart-page">
-      <ScrollView scrollY>
-        <View className="cart-list">
+      <View className="cart-list">
+        <ScrollView scrollY className="main-scroll">
           {cartItems.map((item) => (
             <View key={item.id} className="cart-item">
               <View className={`checkbox ${item.selected ? "checked" : ""}`} onClick={() => toggleItem(item.id)}>
@@ -87,8 +76,9 @@ const Cart = (): JSX.Element => {
               </View>
             </View>
           ))}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
+
       <View className="cart-footer">
         <View className="footer-left">
           <View className={`checkbox-all ${allSelected ? "checked" : ""}`} onClick={toggleAll}>

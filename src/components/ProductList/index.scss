@@ -1,0 +1,25 @@
+.product-list {
+  background-color: #f5f5f5;
+  padding: 20px 30px;
+
+  .list-header {
+    margin-bottom: 20px;
+
+    .list-title {
+      font-size: 32px;
+      color: #333;
+      font-weight: bold;
+    }
+  }
+
+  .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    .grid-item {
+      width: 48%;
+      margin-bottom: 20px;
+    }
+  }
+}

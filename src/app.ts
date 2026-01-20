@@ -1,17 +1,27 @@
-import { PropsWithChildren } from 'react'
-import { useLaunch } from '@tarojs/taro'
+import { useLaunch } from "@tarojs/taro";
 
-import './app.scss'
+import type { PropsWithChildren } from "react";
+import type React from "react";
 
-function App({ children }: PropsWithChildren<any>) {
+import "./app.scss";
+
+const App = ({
+  children,
+}: PropsWithChildren):
+  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+  | string
+  | number
+  | Iterable<React.ReactNode>
+  | React.ReactPortal
+  | undefined
+  | null
+  | boolean => {
   useLaunch(() => {
-    console.log('App launched.')
-  })
+    console.log("App launched.");
+  });
 
   // children 是将要会渲染的页面
-  return children
-}
-  
+  return children;
+};
 
-
-export default App
+export default App;

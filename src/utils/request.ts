@@ -1,13 +1,13 @@
 import Taro from "@tarojs/taro";
 
-const getToken = () => {
+const getToken = (): string | null => {
   return null;
 };
 
 /**
  * 后端统一响应格式
  */
-export interface IResponse<T = any> {
+export interface IResponse<T = unknown> {
   code: number;
   data: T;
   message: string;
@@ -153,7 +153,7 @@ const requestMethod = async <T, R>(
       // 创建请求配置
       const requestConfig: Taro.request.Option = {
         url: fullUrl,
-        method: method as any,
+        method,
         data: method === "GET" ? data : data,
         header: headers,
         timeout,
@@ -162,7 +162,7 @@ const requestMethod = async <T, R>(
       // 注意：Taro.request 在小程序端可能不支持 signal，这里主要是为了兼容性
       // 在 H5 环境下可以使用 signal 来取消请求
       if (cancelToken?.signal) {
-        (requestConfig as any).signal = cancelToken.signal;
+        (requestConfig as unknown as Record<string, unknown>).signal = cancelToken.signal;
       }
 
       const response = await Taro.request<IResponse<R>>(requestConfig);
@@ -171,12 +171,12 @@ const requestMethod = async <T, R>(
       if (response.statusCode < 200 || response.statusCode >= 300) {
         handleError(response.statusCode, response.data as IResponse);
         const error = new Error(`请求失败: HTTP ${response.statusCode}`);
-        (error as any).statusCode = response.statusCode;
+        (error as { statusCode?: number }).statusCode = response.statusCode;
         throw error;
       }
 
       return parse<R>(response, { handleRaw: !!handleRaw });
-    } catch (error: any) {
+    } catch (error: unknown) {
       lastError = error;
       attempts++;
 
@@ -186,8 +186,12 @@ const requestMethod = async <T, R>(
       // 3. 业务逻辑错误（code !== 0）
       // 4. 已达到最大重试次数
       const isBusinessError = (error as IBusinessError)?.isBusinessError;
-      const isCanceled = error.errMsg?.includes("cancel") || error.errMsg?.includes("abort");
-      const statusCode = error.statusCode || error.response?.statusCode;
+      const isCanceled =
+        (error as { errMsg?: string })?.errMsg?.includes("cancel") ||
+        (error as { errMsg?: string })?.errMsg?.includes("abort");
+      const statusCode =
+        (error as { statusCode?: number; response?: { statusCode?: number } }).statusCode ||
+        (error as { statusCode?: number; response?: { statusCode?: number } }).response?.statusCode;
 
       if (isCanceled || statusCode === 401 || isBusinessError || attempts > retry) {
         // 如果是网络错误且不是上述情况，在最后一次重试时显示错误
@@ -273,12 +277,12 @@ const uploadFiles = async <T>(
     let responseData: IResponse | null = null;
     try {
       responseData = JSON.parse(result.data) as IResponse;
-    } catch (e) {
+    } catch {
       // 解析失败，使用默认错误信息
     }
     handleError(result.statusCode, responseData || { code: result.statusCode, data: null, message: "上传失败" });
     const error = new Error(`上传失败: HTTP ${result.statusCode}`);
-    (error as any).statusCode = result.statusCode;
+    (error as { statusCode?: number }).statusCode = result.statusCode;
     throw error;
   }
 
@@ -286,7 +290,7 @@ const uploadFiles = async <T>(
   let responseData: IResponse<T>;
   try {
     responseData = JSON.parse(result.data) as IResponse<T>;
-  } catch (e) {
+  } catch {
     throw new Error("上传响应数据格式错误");
   }
 

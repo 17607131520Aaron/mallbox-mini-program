@@ -13,6 +13,7 @@ interface IUseAuthProps {
   fetchUserProfile: (query: IQueryUserInfoRequest) => Promise<void | IUserProfile>;
   logout: (payload: ILoginRequest) => Promise<void>;
   login: (payload: ILoginRequest) => Promise<void>;
+  checkLoginStatus: (showPrompt?: boolean) => Promise<boolean>;
 }
 
 const useAuth = (): IUseAuthProps => {
@@ -61,7 +62,73 @@ const useAuth = (): IUseAuthProps => {
     await UserService.loginUser(payload);
   };
 
-  return { loading, fetchUserProfile, login, logout };
+  //检查登录状态
+  const checkLoginStatus = async (showPrompt = true): Promise<boolean> => {
+    const token = useUserStore.getState().token;
+    const expiresIn = useUserStore.getState().expiresIn;
+
+    // 没有 token，未登录
+    if (!token) {
+      if (showPrompt) {
+        try {
+          const res = await Taro.showModal({
+            title: "提示",
+            content: "您还未登录，是否前往登录？",
+            confirmText: "去登录",
+            cancelText: "暂不登录",
+          });
+
+          if (res.confirm) {
+            // 用户点击去登录，跳转到登录页
+            Taro.navigateTo({
+              url: "/pages/Login/index",
+            });
+          }
+        } catch (error) {
+          console.error("显示登录提示失败:", error);
+        }
+      }
+      return false;
+    }
+
+    // 如果有过期时间，检查是否过期
+    if (expiresIn) {
+      const now = Date.now();
+      const expireTime = now + expiresIn * 1000; // expiresIn 是秒，转换为毫秒
+
+      if (now >= expireTime) {
+        // token 已过期，清除登录状态
+        clearStore();
+        clearLoginStatus();
+
+        if (showPrompt) {
+          try {
+            const res = await Taro.showModal({
+              title: "登录已过期",
+              content: "您的登录已过期，请重新登录",
+              confirmText: "重新登录",
+              cancelText: "取消",
+              showCancel: true,
+            });
+
+            if (res.confirm) {
+              // 用户点击重新登录，跳转到登录页
+              Taro.navigateTo({
+                url: "/pages/Login/index",
+              });
+            }
+          } catch (error) {
+            console.error("显示过期提示失败:", error);
+          }
+        }
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  return { loading, fetchUserProfile, login, logout, checkLoginStatus };
 };
 
 export default useAuth;

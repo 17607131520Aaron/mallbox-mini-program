@@ -2,14 +2,22 @@ import Taro from "@tarojs/taro";
 
 const LOGIN_STORAGE_KEY = "login_status";
 const LOGIN_EXPIRE_DAYS = 3; // 登录有效期3天
+
+interface ILoginStatus {
+  isLoggedIn: boolean;
+  loginTime: number;
+  expireTime: number;
+  userInfo?: Record<string, unknown>;
+}
+
 export const saveLoginStatus = (userInfo?: {
   token?: string;
   openid?: string;
   sessionKey?: string;
   expiresIn?: number;
-  userInfo?: any;
-  [key: string]: any;
-}) => {
+  userInfo?: Record<string, unknown>;
+  [key: string]: unknown;
+}): void => {
   const now = Date.now();
 
   // 如果后端返回了expiresIn（秒），使用它来计算过期时间
@@ -22,7 +30,7 @@ export const saveLoginStatus = (userInfo?: {
     expireTime = now + LOGIN_EXPIRE_DAYS * 24 * 60 * 60 * 1000; // 3天后过期
   }
 
-  const loginStatus: LoginStatus = {
+  const loginStatus: ILoginStatus = {
     isLoggedIn: true,
     loginTime: now,
     expireTime,
@@ -40,7 +48,7 @@ export const saveLoginStatus = (userInfo?: {
 /**
  * 清除登录状态
  */
-export const clearLoginStatus = () => {
+export const clearLoginStatus = (): void => {
   try {
     Taro.removeStorageSync(LOGIN_STORAGE_KEY);
     console.log("登录状态已清除");

@@ -3,14 +3,14 @@ import Taro from "@tarojs/taro";
 
 import { useState, useEffect } from "react";
 
-import { mockUserInfo, mockOrderStats } from "../../mock/data";
+import { mockUserInfo, mockOrderStats } from "./data";
 
-import type { UserInfo, OrderStats } from "../../types";
+import type { IOrderStats, IUserInfo } from "./type";
 import "./index.scss";
 
 const Profile = (): JSX.Element => {
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [orderStats, setOrderStats] = useState<OrderStats>({
+  const [userInfo, setUserInfo] = useState<IUserInfo | null>(null);
+  const [orderStats, setOrderStats] = useState<IOrderStats>({
     unpaid: 0,
     unshipped: 0,
     unreceived: 0,
@@ -47,74 +47,92 @@ const Profile = (): JSX.Element => {
     { icon: "👁️", text: "浏览记录" },
     { icon: "💬", text: "联系客服" },
     { icon: "⚙️", text: "设置" },
+    { icon: "🔔", text: "消息通知" },
+    { icon: "💳", text: "我的钱包" },
+    { icon: "🎁", text: "礼品卡" },
+    { icon: "👥", text: "邀请好友" },
+    { icon: "📊", text: "账单明细" },
+    { icon: "🏆", text: "会员中心" },
+    { icon: "🎯", text: "积分商城" },
+    { icon: "📝", text: "意见反馈" },
+    { icon: "❓", text: "帮助中心" },
+    { icon: "📱", text: "绑定手机" },
+    { icon: "🔐", text: "账号安全" },
+    { icon: "🌙", text: "夜间模式" },
+    { icon: "🌍", text: "语言设置" },
+    { icon: "📢", text: "推送设置" },
+    { icon: "🔄", text: "清除缓存" },
+    { icon: "ℹ️", text: "关于我们" },
+    { icon: "📜", text: "用户协议" },
+    { icon: "🔒", text: "隐私政策" },
+    { icon: "⚡", text: "快捷支付" },
+    { icon: "🎨", text: "主题设置" },
   ];
 
   return (
     <View className="profile-page">
-      <ScrollView scrollY>
-        <View className="user-header">
-          <View className="avatar">
-            <Text>👤</Text>
+      <View className="user-header">
+        <View className="avatar">
+          <Text>👤</Text>
+        </View>
+        <View className="user-info">
+          <Text className="nickname">{userInfo?.nickname || "用户昵称"}</Text>
+          <Text className="user-id">ID: {userInfo?.id || "user123"}</Text>
+        </View>
+      </View>
+      <View className="order-section">
+        <View className="section-title">
+          <Text>我的订单</Text>
+          <Text className="view-all">查看全部 &gt;</Text>
+        </View>
+        <View className="order-list">
+          <View className="order-item" onClick={() => handleOrderClick("待付款")}>
+            <View className="order-icon">
+              <Text>💰</Text>
+              {orderStats.unpaid > 0 && (
+                <View className="badge">
+                  <Text>{orderStats.unpaid}</Text>
+                </View>
+              )}
+            </View>
+            <Text className="order-text">待付款</Text>
           </View>
-          <View className="user-info">
-            <Text className="nickname">{userInfo?.nickname || "用户昵称"}</Text>
-            <Text className="user-id">ID: {userInfo?.id || "user123"}</Text>
+          <View className="order-item" onClick={() => handleOrderClick("待发货")}>
+            <View className="order-icon">
+              <Text>📦</Text>
+              {orderStats.unshipped > 0 && (
+                <View className="badge">
+                  <Text>{orderStats.unshipped}</Text>
+                </View>
+              )}
+            </View>
+            <Text className="order-text">待发货</Text>
+          </View>
+          <View className="order-item" onClick={() => handleOrderClick("待收货")}>
+            <View className="order-icon">
+              <Text>🚚</Text>
+              {orderStats.unreceived > 0 && (
+                <View className="badge">
+                  <Text>{orderStats.unreceived}</Text>
+                </View>
+              )}
+            </View>
+            <Text className="order-text">待收货</Text>
+          </View>
+          <View className="order-item" onClick={() => handleOrderClick("待评价")}>
+            <View className="order-icon">
+              <Text>✍️</Text>
+              {orderStats.uncommented > 0 && (
+                <View className="badge">
+                  <Text>{orderStats.uncommented}</Text>
+                </View>
+              )}
+            </View>
+            <Text className="order-text">待评价</Text>
           </View>
         </View>
-
-        <View className="order-section">
-          <View className="section-title">
-            <Text>我的订单</Text>
-            <Text className="view-all">查看全部 &gt;</Text>
-          </View>
-          <View className="order-list">
-            <View className="order-item" onClick={() => handleOrderClick("待付款")}>
-              <View className="order-icon">
-                <Text>💰</Text>
-                {orderStats.unpaid > 0 && (
-                  <View className="badge">
-                    <Text>{orderStats.unpaid}</Text>
-                  </View>
-                )}
-              </View>
-              <Text className="order-text">待付款</Text>
-            </View>
-            <View className="order-item" onClick={() => handleOrderClick("待发货")}>
-              <View className="order-icon">
-                <Text>📦</Text>
-                {orderStats.unshipped > 0 && (
-                  <View className="badge">
-                    <Text>{orderStats.unshipped}</Text>
-                  </View>
-                )}
-              </View>
-              <Text className="order-text">待发货</Text>
-            </View>
-            <View className="order-item" onClick={() => handleOrderClick("待收货")}>
-              <View className="order-icon">
-                <Text>🚚</Text>
-                {orderStats.unreceived > 0 && (
-                  <View className="badge">
-                    <Text>{orderStats.unreceived}</Text>
-                  </View>
-                )}
-              </View>
-              <Text className="order-text">待收货</Text>
-            </View>
-            <View className="order-item" onClick={() => handleOrderClick("待评价")}>
-              <View className="order-icon">
-                <Text>✍️</Text>
-                {orderStats.uncommented > 0 && (
-                  <View className="badge">
-                    <Text>{orderStats.uncommented}</Text>
-                  </View>
-                )}
-              </View>
-              <Text className="order-text">待评价</Text>
-            </View>
-          </View>
-        </View>
-
+      </View>
+      <ScrollView scrollY style={{ flex: 1 }}>
         <View className="function-section">
           {functionList.map((item, index) => (
             <View key={index} className="function-item" onClick={() => handleFunctionClick(item.text)}>

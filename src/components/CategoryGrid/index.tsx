@@ -1,19 +1,11 @@
 import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
+
+import type { ICategoryItem, ICategoryGridProps } from "./type";
 import "./index.scss";
 
-interface CategoryItem {
-  id: string;
-  name: string;
-  icon: string;
-}
-
-interface CategoryGridProps {
-  categories: CategoryItem[];
-}
-
-const CategoryGrid = ({ categories }: CategoryGridProps): JSX.Element => {
-  const handleCategoryClick = (category: CategoryItem): void => {
+const CategoryGrid = ({ categories }: ICategoryGridProps): JSX.Element => {
+  const handleCategoryClick = (category: ICategoryItem): void => {
     Taro.showToast({
       title: `点击了${category.name}`,
       icon: "none",
@@ -27,11 +19,7 @@ const CategoryGrid = ({ categories }: CategoryGridProps): JSX.Element => {
   return (
     <View className="category-grid">
       {categories.map((category) => (
-        <View
-          key={category.id}
-          className="category-item"
-          onClick={() => handleCategoryClick(category)}
-        >
+        <View key={category.id} className="category-item" onClick={() => handleCategoryClick(category)}>
           <View className="category-icon">
             <Text className="icon-text">{category.icon}</Text>
           </View>

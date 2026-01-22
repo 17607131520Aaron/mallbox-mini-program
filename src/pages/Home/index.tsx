@@ -1,36 +1,19 @@
 import { View, ScrollView } from "@tarojs/components";
+
 import { useState, useEffect } from "react";
-import SearchBar from "../../components/SearchBar";
-import BannerSwiper from "../../components/BannerSwiper";
-import CategoryGrid from "../../components/CategoryGrid";
-import ProductList from "../../components/ProductList";
+
+import BannerSwiper from "@/components/BannerSwiper";
+import CategoryGrid from "@/components/CategoryGrid";
+import ProductList from "@/components/ProductList";
+import SearchBar from "@/components/SearchBar";
+
+import type { IBannerItem, ICategoryItem, IProductItem } from "./type";
 import "./index.scss";
 
-interface BannerItem {
-  id: string;
-  imageUrl: string;
-  linkUrl?: string;
-}
-
-interface CategoryItem {
-  id: string;
-  name: string;
-  icon: string;
-}
-
-interface ProductItem {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  imageUrl: string;
-  sales: number;
-}
-
 const Home = (): JSX.Element => {
-  const [banners, setBanners] = useState<BannerItem[]>([]);
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [banners, setBanners] = useState<IBannerItem[]>([]);
+  const [categories, setCategories] = useState<ICategoryItem[]>([]);
+  const [products, setProducts] = useState<IProductItem[]>([]);
 
   useEffect(() => {
     loadHomeData();

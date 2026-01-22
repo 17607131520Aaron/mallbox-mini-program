@@ -1,22 +1,11 @@
 import { View, Text } from "@tarojs/components";
-import ProductCard from "../ProductCard";
+
+import ProductCard from "@/components/ProductCard";
+
+import type { IProductListProps } from "./type";
 import "./index.scss";
 
-interface ProductItem {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  imageUrl: string;
-  sales: number;
-}
-
-interface ProductListProps {
-  products: ProductItem[];
-  title?: string;
-}
-
-const ProductList = ({ products, title = "推荐商品" }: ProductListProps): JSX.Element => {
+const ProductList = ({ products, title = "推荐商品" }: IProductListProps): JSX.Element => {
   if (products.length === 0) {
     return <View />;
   }
@@ -38,4 +27,3 @@ const ProductList = ({ products, title = "推荐商品" }: ProductListProps): JS
 };
 
 export default ProductList;
-

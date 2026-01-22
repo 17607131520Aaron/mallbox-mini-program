@@ -25,16 +25,11 @@ const useAuth = (): IUseAuthProps => {
   //查询用户信息
   const fetchUserProfile = async (query: IQueryUserInfoRequest): Promise<void | IUserProfile> => {
     try {
-      await Taro.showLoading({
-        title: "加载中",
-        mask: true,
-      });
       const res = await UserService.getUserInfo(query);
       setProfile(res || {});
+      return res;
     } catch (error) {
       console.log(error);
-    } finally {
-      Taro.hideLoading({});
     }
   };
 

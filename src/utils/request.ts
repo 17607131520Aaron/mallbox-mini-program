@@ -1,5 +1,8 @@
 import Taro from "@tarojs/taro";
 
+import { clearLoginStatus } from "./auth";
+import loadingManager from "./loadingManager";
+
 const getToken = (): string | null => {
   return null;
 };
@@ -32,6 +35,8 @@ export interface IRequestConfig<T = unknown> {
   timeout?: number;
   cancelToken?: AbortController;
   retry?: number;
+  showLoading?: boolean; // 是否显示 loading
+  loadingText?: string; // loading 文本
 }
 
 // 业务错误类型，用于标记不应该重试的错误
@@ -46,20 +51,36 @@ const ENV_API_BASE_URL = "http://localhost:9999/storeverserepo/wx";
 /**
  * 统一错误处理
  */
-const handleError = (status: number, data: IResponse): void => {
+const handleError = async (status: number, data: IResponse): Promise<void> => {
   const errorMessages: Record<number, IErrorMessage> = {
     401: {
-      message: "提示",
-      description: "登录超时，请重新登录",
+      message: "登录已过期",
+      description: "您的登录已过期，请重新登录",
       action: async () => {
         // 清除登录信息
-        // clearLoginStatus();
-        const pages = Taro.getCurrentPages();
-        const currentPage = pages[pages.length - 1];
-        if (currentPage && currentPage.route !== "pages/Login/index") {
-          await Taro.redirectTo({
-            url: "/pages/Login/index",
+        clearLoginStatus();
+
+        try {
+          const res = await Taro.showModal({
+            title: "登录已过期",
+            content: "您的登录已过期，请重新登录",
+            confirmText: "重新登录",
+            cancelText: "取消",
+            showCancel: true,
           });
+
+          if (res.confirm) {
+            // 用户点击重新登录，跳转到登录页
+            const pages = Taro.getCurrentPages();
+            const currentPage = pages[pages.length - 1];
+            if (currentPage && currentPage.route !== "pages/Login/index") {
+              await Taro.redirectTo({
+                url: "/pages/Login/index",
+              });
+            }
+          }
+        } catch (error) {
+          console.error("显示登录过期提示失败:", error);
         }
       },
     },
@@ -82,14 +103,16 @@ const handleError = (status: number, data: IResponse): void => {
     description: data?.message || "系统异常",
   };
 
-  Taro.showToast({
-    title: error.description,
-    icon: "none",
-    duration: 2000,
-  });
-
-  if (error.action) {
-    error.action();
+  // 对于 401 错误，执行 action（弹出确认框）
+  if (status === 401 && error.action) {
+    await error.action();
+  } else {
+    // 其他错误直接显示 toast
+    Taro.showToast({
+      title: error.description,
+      icon: "none",
+      duration: 2000,
+    });
   }
 };
 
@@ -130,87 +153,99 @@ const requestMethod = async <T, R>(
   method: "GET" | "POST" | "PUT" | "DELETE",
   config: IRequestConfig<T>,
 ): Promise<R> => {
-  const { retry = 0 } = config;
+  const { retry = 0, showLoading = true, loadingText = "加载中..." } = config;
   let attempts = 0;
   let lastError: unknown;
 
-  while (attempts <= retry) {
-    try {
-      const { url, data, handleRaw, timeout = DEFAULT_TIMEOUT, cancelToken } = config;
-
-      // 构建完整URL（优先使用环境变量中的基础地址）
-      const fullUrl = url.startsWith("http") ? url : `${ENV_API_BASE_URL}${url}`;
-
-      // 获取token
-      const token = getToken();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-
-      // 创建请求配置
-      const requestConfig: Taro.request.Option = {
-        url: fullUrl,
-        method,
-        data: method === "GET" ? data : data,
-        header: headers,
-        timeout,
-      };
-
-      // 注意：Taro.request 在小程序端可能不支持 signal，这里主要是为了兼容性
-      // 在 H5 环境下可以使用 signal 来取消请求
-      if (cancelToken?.signal) {
-        (requestConfig as unknown as Record<string, unknown>).signal = cancelToken.signal;
-      }
-
-      const response = await Taro.request<IResponse<R>>(requestConfig);
-
-      // 处理HTTP状态码错误
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        handleError(response.statusCode, response.data as IResponse);
-        const error = new Error(`请求失败: HTTP ${response.statusCode}`);
-        (error as { statusCode?: number }).statusCode = response.statusCode;
-        throw error;
-      }
-
-      return parse<R>(response, { handleRaw: !!handleRaw });
-    } catch (error: unknown) {
-      lastError = error;
-      attempts++;
-
-      // 以下情况不应该重试：
-      // 1. 取消请求
-      // 2. 认证错误（401）
-      // 3. 业务逻辑错误（code !== 0）
-      // 4. 已达到最大重试次数
-      const isBusinessError = (error as IBusinessError)?.isBusinessError;
-      const isCanceled =
-        (error as { errMsg?: string })?.errMsg?.includes("cancel") ||
-        (error as { errMsg?: string })?.errMsg?.includes("abort");
-      const statusCode =
-        (error as { statusCode?: number; response?: { statusCode?: number } }).statusCode ||
-        (error as { statusCode?: number; response?: { statusCode?: number } }).response?.statusCode;
-
-      if (isCanceled || statusCode === 401 || isBusinessError || attempts > retry) {
-        // 如果是网络错误且不是上述情况，在最后一次重试时显示错误
-        if (attempts > retry && !isBusinessError && statusCode !== 401 && !isCanceled) {
-          await Taro.showToast({
-            title: "网络错误，请检查网络连接",
-            icon: "none",
-            duration: 2000,
-          });
-        }
-        throw error;
-      }
-
-      // 等待后重试
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
+  // 显示 loading
+  if (showLoading) {
+    loadingManager.show(loadingText);
   }
 
-  throw lastError || new Error("请求失败，已达到最大重试次数");
+  try {
+    while (attempts <= retry) {
+      try {
+        const { url, data, handleRaw, timeout = DEFAULT_TIMEOUT, cancelToken } = config;
+
+        // 构建完整URL（优先使用环境变量中的基础地址）
+        const fullUrl = url.startsWith("http") ? url : `${ENV_API_BASE_URL}${url}`;
+
+        // 获取token
+        const token = getToken();
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
+        // 创建请求配置
+        const requestConfig: Taro.request.Option = {
+          url: fullUrl,
+          method,
+          data: method === "GET" ? data : data,
+          header: headers,
+          timeout,
+        };
+
+        // 注意：Taro.request 在小程序端可能不支持 signal，这里主要是为了兼容性
+        // 在 H5 环境下可以使用 signal 来取消请求
+        if (cancelToken?.signal) {
+          (requestConfig as unknown as Record<string, unknown>).signal = cancelToken.signal;
+        }
+
+        const response = await Taro.request<IResponse<R>>(requestConfig);
+
+        // 处理HTTP状态码错误
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          await handleError(response.statusCode, response.data as IResponse);
+          const error = new Error(`请求失败: HTTP ${response.statusCode}`);
+          (error as { statusCode?: number }).statusCode = response.statusCode;
+          throw error;
+        }
+
+        return parse<R>(response, { handleRaw: !!handleRaw });
+      } catch (error: unknown) {
+        lastError = error;
+        attempts++;
+
+        // 以下情况不应该重试：
+        // 1. 取消请求
+        // 2. 认证错误（401）
+        // 3. 业务逻辑错误（code !== 0）
+        // 4. 已达到最大重试次数
+        const isBusinessError = (error as IBusinessError)?.isBusinessError;
+        const isCanceled =
+          (error as { errMsg?: string })?.errMsg?.includes("cancel") ||
+          (error as { errMsg?: string })?.errMsg?.includes("abort");
+        const statusCode =
+          (error as { statusCode?: number; response?: { statusCode?: number } }).statusCode ||
+          (error as { statusCode?: number; response?: { statusCode?: number } }).response?.statusCode;
+
+        if (isCanceled || statusCode === 401 || isBusinessError || attempts > retry) {
+          // 如果是网络错误且不是上述情况，在最后一次重试时显示错误
+          if (attempts > retry && !isBusinessError && statusCode !== 401 && !isCanceled) {
+            await Taro.showToast({
+              title: "网络错误，请检查网络连接",
+              icon: "none",
+              duration: 2000,
+            });
+          }
+          throw error;
+        }
+
+        // 等待后重试
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    throw lastError || new Error("请求失败，已达到最大重试次数");
+  } finally {
+    // 隐藏 loading
+    if (showLoading) {
+      loadingManager.hide();
+    }
+  }
 };
 
 // 导出请求方法
@@ -280,7 +315,7 @@ const uploadFiles = async <T>(
     } catch {
       // 解析失败，使用默认错误信息
     }
-    handleError(result.statusCode, responseData || { code: result.statusCode, data: null, message: "上传失败" });
+    await handleError(result.statusCode, responseData || { code: result.statusCode, data: null, message: "上传失败" });
     const error = new Error(`上传失败: HTTP ${result.statusCode}`);
     (error as { statusCode?: number }).statusCode = result.statusCode;
     throw error;

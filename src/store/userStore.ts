@@ -14,7 +14,7 @@ interface IUserProfile {
   updatedAt: string;
 }
 
-export interface UserState {
+export interface IUserState {
   token: string | null;
   expiresIn?: number;
   profile: IUserProfile | null;
@@ -23,7 +23,7 @@ export interface UserState {
   clear: () => void;
 }
 
-export const useUserStore = create<UserState>((set) => ({
+export const useUserStore = create<IUserState>((set) => ({
   token: null,
   expiresIn: undefined,
   profile: null,
